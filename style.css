@@ -1,0 +1,192 @@
+:root {
+    --primary: #2f7466;
+    --primary-hover: #067fa4;
+    --background: #f8fafc;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --border: #e2e8f0;
+    --success: #28a456;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text);
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: var(--primary);
+    font-size: 2.5rem;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1.2fr;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.coluna {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
+}
+
+h2 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    color: var(--primary);
+}
+
+h3 {
+    font-size: 1.1rem;
+    margin: 20px 0 10px 0;
+}
+
+/* Formulários e Inputs */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+}
+
+button:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* Listas e Itens */
+.lista {
+    list-style: none;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.item-cliente {
+    padding: 8px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.item-cliente:hover {
+    background-color: #f1f5f9;
+}
+
+.item-cliente.selecionado {
+    background-color: #dbeafe;
+    border-left: 4px solid var(--primary);
+}
+
+/* Busca e Cards de Livros */
+.busca-container {
+    display: flex;
+    gap: 10px;
+}
+.busca-container button { width: auto; }
+
+#loading {
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.hidden { display: none !important; }
+
+.card-livro {
+    display: flex;
+    gap: 15px;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 15px;
+    border: 1px solid var(--border);
+}
+
+.card-livro img {
+    width: 80px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.info-livro {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Grid de Empréstimos Ativos */
+.painel-emprestimo-form {
+    background: #f0fdf4;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #bbf7d0;
+}
+.painel-emprestimo-form p { margin-bottom: 8px; }
+
+.grid-emprestimos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.card-emprestimo {
+    display: flex;
+    gap: 12px;
+    background: #f0fdf4;
+    border: 1px solid var(--border);
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-emprestimo img {
+    width: 50px;
+    height: 70px;
+    object-fit: cover;
+}
