@@ -1,192 +1,248 @@
+/* --- CONFIGURAÇÕES GERAIS Y RESETS --- */
 :root {
-    --primary: #2f7466;
-    --primary-hover: #067fa4;
-    --background: #f8fafc;
-    --card-bg: #ffffff;
-    --text: #1e293b;
-    --border: #e2e8f0;
-    --success: #28a456;
+    --primary: #6b21a8;
+    --primary-light: #a855f7;
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    --card-bg: rgba(255, 255, 255, 0.06);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --success: #10b981;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-    background-color: var(--background);
-    color: var(--text);
-    padding: 20px;
+    background: var(--bg-gradient);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* --- HEADER --- */
 header {
-    text-align: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--card-border);
     margin-bottom: 30px;
 }
 
 header h1 {
-    color: var(--primary);
-    font-size: 2.5rem;
+    font-size: 1.8rem;
+    background: linear-gradient(to right, #f472b6, var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
+header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* --- CONTAINER PRINCIPAL --- */
 .container {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr 1.2fr;
-    gap: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 600px;
+    padding: 0 20px;
+    flex: 1;
 }
 
-@media (max-width: 1024px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
+/* Telas maiores (painéis do leitor e admin) se expandem automaticamente */
+#tela-leitor, #tela-admin {
+    max-width: 1000px;
+    width: 100%;
+}
+body:has(#tela-leitor), body:has(#tela-admin) .container {
+    max-width: 1000px;
 }
 
+/* --- CARTÕES / COLUNAS (GLASSMORPHISM) --- */
 .coluna {
     background: var(--card-bg);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--border);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    margin-bottom: 30px;
 }
 
 h2 {
-    font-size: 1.3rem;
-    margin-bottom: 15px;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 8px;
-    color: var(--primary);
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--text-main);
+    text-align: center;
 }
 
 h3 {
     font-size: 1.1rem;
-    margin: 20px 0 10px 0;
+    margin: 25px 0 15px 0;
+    color: var(--primary-light);
 }
 
-/* Formulários e Inputs */
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 0.95rem;
+/* --- FORMULÁRIOS E INPUTS --- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-button {
+input {
     width: 100%;
-    padding: 10px;
-    background-color: var(--primary);
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
     color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
+    font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
-button:hover {
-    background-color: var(--primary-hover);
+input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
+/* --- BOTÕES --- */
+button {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, #4c1d95 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(107, 33, 168, 0.4);
 }
 
 button:disabled {
-    background-color: #cbd5e1;
+    background: #334155;
+    color: #64748b;
     cursor: not-allowed;
 }
 
-/* Listas e Itens */
-.lista {
-    list-style: none;
-    max-height: 250px;
-    overflow-y: auto;
+.btn-nav {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    padding: 8px 16px;
+}
+.btn-nav:hover {
+    background: #ef4444;
+    color: white;
 }
 
-.item-cliente {
-    padding: 8px;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: background 0.2s;
+/* --- LINKS DE TRANSIÇÃO --- */
+.mudanca-tela {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
 }
 
-.item-cliente:hover {
-    background-color: #f1f5f9;
+.mudanca-tela a {
+    color: var(--primary-light);
+    text-decoration: none;
+    font-weight: 600;
 }
 
-.item-cliente.selecionado {
-    background-color: #dbeafe;
-    border-left: 4px solid var(--primary);
+.mudanca-tela a:hover {
+    text-decoration: underline;
 }
 
-/* Busca e Cards de Livros */
+/* --- BUSCA E INTERFACE DO LEITOR --- */
 .busca-container {
     display: flex;
     gap: 10px;
+    margin-bottom: 20px;
 }
-.busca-container button { width: auto; }
 
 #loading {
     text-align: center;
-    padding: 10px;
-    font-weight: bold;
-    color: var(--primary);
+    padding: 15px;
+    color: var(--text-muted);
 }
 
-.hidden { display: none !important; }
-
+/* Card de exibição do livro pesquisado */
 .card-livro {
     display: flex;
-    gap: 15px;
-    background: #f8fafc;
-    padding: 12px;
-    border-radius: 6px;
-    margin-top: 15px;
-    border: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 15px;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .card-livro img {
     width: 80px;
     height: 110px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 .info-livro {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 100%;
+    flex: 1;
 }
 
-/* Grid de Empréstimos Ativos */
+/* Formulário de confirmação de empréstimo */
 .painel-emprestimo-form {
-    background: #f0fdf4;
+    background: rgba(168, 85, 247, 0.05);
+    border: 1px dashed var(--primary-light);
     padding: 15px;
-    border-radius: 6px;
-    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    margin-top: 20px;
 }
-.painel-emprestimo-form p { margin-bottom: 8px; }
 
+/* --- GRIDS DE EMPRÉSTIMOS (LIVROS LOCADOS) --- */
 .grid-emprestimos {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
 }
 
 .card-emprestimo {
     display: flex;
-    gap: 12px;
-    background: #f0fdf4;
-    border: 1px solid var(--border);
-    padding: 10px;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 10px;
+    align-items: center;
 }
 
 .card-emprestimo img {
     width: 50px;
     height: 70px;
     object-fit: cover;
+    border-radius: 4px;
+}
+
+/* --- UTILITÁRIOS --- */
+.hidden {
+    display: none !important;
 }

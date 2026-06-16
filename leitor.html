@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioTech 2.0 - Leitor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>BiblioTech</h1>
+        <p id="subtitulo-header">Carregando...</p>
+        <button id="btn-logout" class="btn-nav">Sair</button>
+    </header>
+
+    <main class="container">
+        <section id="tela-leitor" class="coluna">
+            <h2>Busca Inteligente de Livros (Perfil Leitor)</h2>
+            <div class="busca-container">
+                <input type="text" id="input-busca" placeholder="Digite o nome do livro...">
+                <button id="btn-buscar">Buscar</button>
+            </div>
+            
+            <div id="loading" class="hidden">Carregando livros... ⏳</div>
+            <div id="resultado-busca"></div>
+
+            <div class="painel-emprestimo-form">
+                <h3>Confirmar Empréstimo</h3>
+                <p><strong>Livro Selecionado:</strong> <span id="livro-selecionado-titulo">Nenhum</span></p>
+                <button id="btn-finalizar-emprestimo" disabled>Pegar Empréstimo</button>
+            </div>
+            <h3>Meus Livros Emprestados</h3>
+            <div id="lista-emprestimos-leitor" class="grid-emprestimos"></div>
+        </section>
+    </main>
+
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

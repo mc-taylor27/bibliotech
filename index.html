@@ -3,51 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BiblioTech - Sistema de Biblioteca</title>
+    <title>BiblioTech 2.0 - Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <h1>BiblioTech</h1>
-        <p>A sua Biblioteca favorita!</p>
+        <p id="subtitulo-header">A sua Biblioteca favorita!</p>
     </header>
 
     <main class="container">
-        <section class="coluna" id="secao-clientes">
-            <h2>Gestão de Clientes</h2>
-            <form id="form-cliente">
-                <input type="text" id="nome-cliente" placeholder="Nome Completo" required>
-                <input type="text" id="cpf-cliente" placeholder="CPF (somente números)" required>
-                <input type="email" id="email-cliente" placeholder="E-mail" required>
-                <button type="submit">Cadastrar Cliente</button>
+        <section id="tela-login" class="coluna">
+            <h2>Tela de Login</h2>
+            <form id="form-login">
+                <input type="text" id="login-email" placeholder="E-mail (ou 'admin')" required>
+                <input type="password" id="login-senha" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
             </form>
-            
-            <h3>Clientes Cadastrados</h3>
-            <ul id="lista-clientes" class="lista"></ul>
-        </section>
-
-        <section class="coluna" id="secao-livros">
-            <h2>Busca Inteligente de Livros</h2>
-            <div class="busca-container">
-                <input type="text" id="input-busca" placeholder="Digite o nome do livro...">
-                <button id="btn-buscar">Buscar</button>
-            </div>
-            
-            <div id="loading" class="hidden">Carregando livros... ⏳</div>
-            <div id="resultado-busca"></div>
-        </section>
-
-        <section class="coluna" id="secao-emprestimos">
-            <h2>Controle de Empréstimos</h2>
-            <div class="painel-emprestimo-form">
-                <h3>Novo Empréstimo</h3>
-                <p><strong>Cliente Selecionado:</strong> <span id="cliente-selecionado-nome">Nenhum</span></p>
-                <p><strong>Livro Selecionado:</strong> <span id="livro-selecionado-titulo">Nenhum</span></p>
-                <button id="btn-finalizar-emprestimo" disabled>Finalizar Empréstimo</button>
-            </div>
-
-            <h3>Empréstimos Ativos</h3>
-            <div id="lista-emprestimos" class="grid-emprestimos"></div>
+            <p class="mudanca-tela">
+                Não tem conta? <a href="cadastro.html"><span>Cadastre-se aqui</span></a>
+            </p>
         </section>
     </main>
 

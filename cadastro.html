@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioTech 2.0 - Cadastro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>BiblioTech</h1>
+        <p id="subtitulo-header">A sua Biblioteca favorita!</p>
+    </header>
+
+    <main class="container">
+        <section id="tela-cadastro" class="coluna">
+            <h2>Tela de Cadastro</h2>
+            <form id="form-cadastro">
+                <input type="text" id="cad-nome" placeholder="Nome Completo" required>
+                <input type="email" id="cad-email" placeholder="E-mail" required>
+                <input type="password" id="cad-senha" placeholder="Crie uma Senha" required>
+                <button type="submit">Salvar Cadastro</button>
+            </form>
+            <p class="mudanca-tela">
+                Já tem conta? <a href="index.html"><span>Voltar para o Login</span></a>
+            </p>
+        </section>
+    </main>
+
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

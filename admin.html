@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioTech 2.0 - Administração</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>BiblioTech</h1>
+        <p id="subtitulo-header">Olá, admin!</p>
+        <button id="btn-logout" class="btn-nav">Sair</button>
+    </header>
+
+    <main class="container">
+        <section id="tela-admin" class="coluna">
+            <h2>Painel de Gerenciamento (Perfil Admin)</h2>
+            <div style="background: #de25eb; color: white; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px;">
+                <strong>Modo Administrador Ativo</strong>
+            </div>
+            
+            <h3>Todos os Livros Emprestados no Sistema</h3>
+            <div id="lista-emprestimos" class="grid-emprestimos"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

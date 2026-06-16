@@ -1,4 +1,3 @@
-// Função isolada para buscar livros na Open Library API
 async function buscarLivroNaAPI(termo) {
     const url = `https://openlibrary.org/search.json?title=${encodeURIComponent(termo)}`;
     
@@ -8,16 +7,12 @@ async function buscarLivroNaAPI(termo) {
         
         const data = await response.json();
         
-        // Se não encontrar nenhum documento
         if (!data.docs || data.docs.length === 0) {
             return null;
         }
         
-        // Pegamos o primeiro resultado mais relevante
         const livro = data.docs[0];
         
-        // Constrói a URL da capa baseada no ID fornecido pela API
-        // Se não houver capa, usamos uma imagem placeholder padrão
         const capaId = livro.cover_i;
         const urlCapa = capaId 
             ? `https://covers.openlibrary.org/b/id/${capaId}-M.jpg` 

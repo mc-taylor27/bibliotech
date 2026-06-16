@@ -1,160 +1,223 @@
 // --- ESTADO GLOBAL DA APLICAÇÃO ---
-let clientes = JSON.parse(localStorage.getItem('clientes')) || []; 
+let usuarios = JSON.parse(localStorage.getItem('usuarios')) || []; 
 let emprestimos = JSON.parse(localStorage.getItem('emprestimos')) || []; 
-
-let clienteSelecionado = null;
 let livroSelecionado = null;
 
-// --- ELEMENTOS DO DOM ---
-const formCliente = document.getElementById('form-cliente');
-const listaClientesUI = document.getElementById('lista-clientes');
+console.log(usuarios);
+
+// Descobre em qual página o usuário está navegando atualmente
+const paginaAtual = window.location.pathname.split("/").pop();
+
+// --- MAPEAMENTO ELEMENTOS DO DOM (Condicionais para evitar erros de null) ---
+const subtituloHeader = document.getElementById('subtitulo-header');
+const btnLogout = document.getElementById('btn-logout');
+
+const formLogin = document.getElementById('form-login');
+const formCadastro = document.getElementById('form-cadastro');
+
 const inputBusca = document.getElementById('input-busca');
 const btnBuscar = document.getElementById('btn-buscar');
 const loadingUI = document.getElementById('loading');
 const resultadoBuscaUI = document.getElementById('resultado-busca');
 const btnFinalizarEmprestimo = document.getElementById('btn-finalizar-emprestimo');
 const listaEmprestimosUI = document.getElementById('lista-emprestimos');
+const listaEmprestimosLeitorUI = document.getElementById('lista-emprestimos-leitor');
 
-// --- 1. GESTÃO DE CLIENTES ---
-formCliente.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const nome = document.getElementById('nome-cliente').value.trim();
-    const cpf = document.getElementById('cpf-cliente').value.trim();
-    const email = document.getElementById('email-cliente').value.trim();
+// ================= CONTROLE DE SESSÃO E SEGURANÇA =================
+function verificarSessao() {
+    const logado = JSON.parse(sessionStorage.getItem('usuarioLogado'));
 
-    // Tratamento de Erro / Validação simples
-    if (!nome || !cpf || !email) { 
-        alert('Por favor, preencha todos os campos do cliente!');
+    // Se não estiver logado e tentar acessar leitor ou admin, volta para o index
+    if (!logado && (paginaAtual === 'leitor.html' || paginaAtual === 'admin.html')) {
+        window.location.href = 'index.html';
         return;
     }
 
-    const novoCliente = { id: Date.now(), nome, cpf, email };
-    clientes.push(novoCliente);
-    
-    localStorage.setItem('clientes', JSON.stringify(clientes)); 
-    formCliente.reset();
-    renderizarClientes();
-});
+    if (logado) {
+        if (subtituloHeader) subtituloHeader.innerText = `Olá, ${logado.nome}!`;
 
-function renderizarClientes() {
-    listaClientesUI.innerHTML = '';
-    clientes.forEach(cliente => {
-        const li = document.createElement('li');
-        li.className = 'item-cliente';
-        if (clienteSelecionado && clienteSelecionado.id === cliente.id) {
-            li.classList.add('selecionado');
+        // Bloqueia leitor de entrar na página do admin e vice-versa
+        if (logado.tipo === 'admin' && paginaAtual === 'leitor.html') {
+            window.location.href = 'admin.html';
+        } else if (logado.tipo === 'cliente' && paginaAtual === 'admin.html') {
+            window.location.href = 'leitor.html';
         }
-        li.innerHTML = `<strong>${cliente.nome}</strong><br><small>CPF: ${cliente.cpf}</small>`;
-        
-        // Evento de seleção para empréstimo
-        li.addEventListener('click', () => {
-            clienteSelecionado = cliente;
-            document.getElementById('cliente-selecionado-nome').innerText = cliente.nome;
-            renderizarClientes(); // Atualiza classe visual de selecionado
-            verificarBotaoEmprestimo();
-        });
-        
-        listaClientesUI.appendChild(li);
+    }
+}
+
+// Evento de Logout
+if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+        sessionStorage.removeItem('usuarioLogado');
+        window.location.href = 'index.html';
     });
 }
 
-// --- 2. BUSCA INTELIGENTE DE LIVROS ---
-btnBuscar.addEventListener('click', async () => {
-    const termo = inputBusca.value.trim();
-    if (!termo) {
-        alert('Digite o nome de um livro para buscar!');
-        return;
-    }
+// ================= FASE A: LOGIN & CADASTRO =================
 
-    // Feedback visual de Carregando...
-    loadingUI.classList.remove('hidden'); 
-    resultadoBuscaUI.innerHTML = '';
+if (formCadastro) {
+    formCadastro.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nome = document.getElementById('cad-nome').value.trim();
+        const email = document.getElementById('cad-email').value.trim();
+        const senha = document.getElementById('cad-senha').value.trim();
 
-    try {
-        const livro = await buscarLivroNaAPI(termo); 
-        loadingUI.classList.add('hidden'); 
-
-        if (!livro) { 
-            resultadoBuscaUI.innerHTML = '<p style="color:red; margin-top:10px;">Nenhum livro encontrado com esse título.</p>';
+        if (usuarios.some(u => u.email === email) || email === 'admin') {
+            alert('Este e-mail já está em uso no sistema!');
             return;
         }
 
-        // Renderiza card do livro encontrado
-        resultadoBuscaUI.innerHTML = `
-            <div class="card-livro">
-                <img src="${livro.capa}" alt="Capa do livro">
-                <div class="info-livro">
-                    <div>
-                        <h4>${livro.titulo}</h4>
-                        <p><small>Autor: ${livro.autor}</small></p>
-                    </div>
-                    <button id="btn-selecionar-livro">Selecionar para Empréstimo</button>
-                </div>
-            </div>
-        `; 
+        const novoUsuario = { nome, email, senha, tipo: 'cliente' };
+        usuarios.push(novoUsuario);
+        localStorage.setItem('usuarios', JSON.stringify(usuarios));
 
-        // Evento ao clicar no botão interno do card
-        document.getElementById('btn-selecionar-livro').addEventListener('click', () => {
-            livroSelecionado = livro; 
-            document.getElementById('livro-selecionado-titulo').innerText = livro.titulo;
-            verificarBotaoEmprestimo();
-        });
-
-    } catch (erro) { 
-        loadingUI.classList.add('hidden'); 
-        resultadoBuscaUI.innerHTML = '<p style="color:red; margin-top:10px;">Erro ao conectar com o serviço de livros. Tente novamente.</p>';
-    }
-});
-
-// --- 3. CONTROLE DE EMPRÉSTIMOS ---
-function verificarBotaoEmprestimo() {
-    // Só habilita o botão final se tiver ambos selecionados
-    if (clienteSelecionado && livroSelecionado) {
-        btnFinalizarEmprestimo.disabled = false;
-    } else {
-        btnFinalizerEmprestimo.disabled = true;
-    }
+        alert("Sucesso!"); 
+        formCadastro.reset();
+        window.location.href = 'index.html'; 
+    });
 }
 
-btnFinalizarEmprestimo.addEventListener('click', () => {
-    if (!clienteSelecionado || !livroSelecionado) return;
+if (formLogin) {
+    formLogin.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const emailInput = document.getElementById('login-email').value.trim();
+        const senhaInput = document.getElementById('login-senha').value.trim();
 
-    // Calcular data de devolução (7 dias a partir de hoje)
-    const hoje = new Date();
-    const dataDevolucao = new Date();
-    dataDevolucao.setDate(hoje.getDate() + 7); 
+        // 1. Administrador Fixo
+        if (emailInput === 'admin' && senhaInput === 'admin') { // Adicionada trava simples de senha pro admin
+            const cracha = { nome: 'Administrador', tipo: 'admin' };
+            sessionStorage.setItem('usuarioLogado', JSON.stringify(cracha));
+            window.location.href = 'admin.html';
+            return;
+        }
 
-    const novoEmprestimo = {
-        id: Date.now(),
-        clienteNome: clienteSelecionado.nome, 
-        livroTitulo: livroSelecionado.titulo, 
-        livroCapa: livroSelecionado.capa, 
-        devolucao: dataDevolucao.toLocaleDateString('pt-BR')
-    };
+        // 2. Leitores
+        const usuarioEncontrado = usuarios.find(u => u.email === emailInput && u.senha === senhaInput);
 
-    emprestimos.push(novoEmprestimo);
-    localStorage.setItem('emprestimos', JSON.stringify(emprestimos)); 
+        if (usuarioEncontrado) {
+            const cracha = { nome: usuarioEncontrado.nome, tipo: 'cliente' };
+            sessionStorage.setItem('usuarioLogado', JSON.stringify(cracha));
+            window.location.href = 'leitor.html';
+        } else {
+            alert('E-mail ou senha incorretos! Tente novamente.');
+        }
+    });
+}
 
-    // Resetar seleções atuais
-    clienteSelecionado = null;
-    livroSelecionado = null;
-    document.getElementById('cliente-selecionado-nome').innerText = 'Nenhum';
-    document.getElementById('livro-selecionado-titulo').innerText = 'Nenhum';
-    resultadoBuscaUI.innerHTML = '';
-    inputBusca.value = '';
+// ================= FASE B: SISTEMA DO LEITOR (BUSCA & LOCAÇÃO) =================
+
+if (paginaAtual === 'leitor.html') {
     
-    btnFinalizarEmprestimo.disabled = true;
+    btnBuscar.addEventListener('click', async () => {
+        const termo = inputBusca.value.trim();
+        if (!termo) {
+            alert('Digite o nome de um livro para buscar!');
+            return;
+        }
 
-    renderizarClientes();
-    renderizarEmprestimos();
-});
+        loadingUI.classList.remove('hidden'); 
+        resultadoBuscaUI.innerHTML = '';
 
-function renderizarEmprestimos() {
+        try {
+            const livro = await buscarLivroNaAPI(termo); 
+            loadingUI.classList.add('hidden'); 
+
+            if (!livro) { 
+                resultadoBuscaUI.innerHTML = '<p style="color:red; margin-top:10px;">Nenhum livro encontrado com esse título.</p>';
+                return;
+            }
+
+            resultadoBuscaUI.innerHTML = `
+                <div class="card-livro">
+                    <img src="${livro.capa}" alt="Capa do livro">
+                    <div class="info-livro">
+                        <div>
+                            <h4>${livro.titulo}</h4>
+                            <p><small>Autor: ${livro.autor}</small></p>
+                        </div>
+                        <button id="btn-selecionar-livro">Selecionar Livro</button>
+                    </div>
+                </div>
+            `; 
+
+            document.getElementById('btn-selecionar-livro').addEventListener('click', () => {
+                livroSelecionado = livro; 
+                document.getElementById('livro-selecionado-titulo').innerText = livro.titulo;
+                btnFinalizarEmprestimo.disabled = false;
+            });
+
+        } catch (erro) { 
+            loadingUI.classList.add('hidden'); 
+            resultadoBuscaUI.innerHTML = '<p style="color:red; margin-top:10px;">Erro ao conectar com a API de livros.</p>';
+        }
+    });
+
+    btnFinalizarEmprestimo.addEventListener('click', () => {
+        if (!livroSelecionado) return;
+
+        const logado = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+        const hoje = new Date();
+        const dataDevolucao = new Date();
+        dataDevolucao.setDate(hoje.getDate() + 7); 
+
+        const novoEmprestimo = {
+            id: Date.now(),
+            clienteNome: logado.nome, 
+            livroTitulo: livroSelecionado.titulo, 
+            livroCapa: livroSelecionado.capa, 
+            devolucao: dataDevolucao.toLocaleDateString('pt-BR')
+        };
+
+        emprestimos.push(novoEmprestimo);
+        localStorage.setItem('emprestimos', JSON.stringify(emprestimos)); 
+
+        alert(`Sucesso! Você pegou o livro "${livroSelecionado.titulo}" emprestado.`);
+
+        // Reset do formulário e recarrega a lista do leitor
+        livroSelecionado = null;
+        document.getElementById('livro-selecionado-titulo').innerText = 'Nenhum';
+        resultadoBuscaUI.innerHTML = '';
+        inputBusca.value = '';
+        btnFinalizarEmprestimo.disabled = true;
+        
+        renderizarEmprestimosLeitor();
+    });
+}
+
+function renderizarEmprestimosLeitor() {
+    if (!listaEmprestimosLeitorUI) return;
+    listaEmprestimosLeitorUI.innerHTML = '';
+    
+    const logado = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+    // Filtra para exibir apenas os empréstimos correspondentes ao usuário ativo
+    const meusEmprestimos = emprestimos.filter(emp => emp.clienteNome === logado.nome);
+
+    if (meusEmprestimos.length === 0) {
+        listaEmprestimosLeitorUI.innerHTML = '<p style="text-align:center; color:#64748b; font-style:italic; padding:10px;">Você não possui nenhum empréstimo ativo.</p>';
+        return;
+    }
+
+    meusEmprestimos.forEach(emp => {
+        const card = document.createElement('div');
+        card.className = 'card-emprestimo';
+        card.innerHTML = `
+            <img src="${emp.livroCapa}" alt="Capa">
+            <div>
+                <h4>${emp.livroTitulo}</h4>
+                <p><small style="color: #6b21a8; font-weight: bold;">Devolução: ${emp.devolucao}</small></p>
+            </div>
+        `; 
+        listaEmprestimosLeitorUI.appendChild(card);
+    });
+}
+
+// ================= FASE C: VISÃO DO ADMINISTRADOR =================
+function renderizarEmprestimosAdmin() {
+    if (!listaEmprestimosUI) return;
     listaEmprestimosUI.innerHTML = '';
     
     if (emprestimos.length === 0) {
-        listaEmprestimosUI.innerHTML = '<p><small>Nenhum empréstimo ativo no momento.</small></p>';
+        listaEmprestimosUI.innerHTML = '<p style="text-align:center; color:#64748b; font-style:italic; padding:10px;">Nenhum empréstimo ativo no momento.</p>';
         return;
     }
 
@@ -165,8 +228,8 @@ function renderizarEmprestimos() {
             <img src="${emp.livroCapa}" alt="Capa">
             <div>
                 <h4>${emp.livroTitulo}</h4>
-                <p><small>Leitor: <strong>${emp.clienteNome}</strong></small></p>
-                <p><small style="color: var(--success)">Devolução: ${emp.devolucao}</small></p>
+                <p><small>Quem pegou: <strong>${emp.clienteNome}</strong></small></p>
+                <p><small style="color: #6b21a8; font-weight: bold;">Devolução: ${emp.devolucao}</small></p>
             </div>
         `; 
         listaEmprestimosUI.appendChild(card);
@@ -174,5 +237,6 @@ function renderizarEmprestimos() {
 }
 
 // --- INICIALIZAÇÃO DA PÁGINA ---
-renderizarClientes();
-renderizarEmprestimos();
+verificarSessao();
+if (paginaAtual === 'leitor.html') renderizarEmprestimosLeitor();
+if (paginaAtual === 'admin.html') renderizarEmprestimosAdmin();
